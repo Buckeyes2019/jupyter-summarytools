@@ -17,7 +17,7 @@ def get_stats(df: pd.DataFrame, num_proc: int, max_level: int = 10, tbl_name: st
     
     return results
 
-def dfSummary(data: pd.DataFrame, max_level: int = 10, show_graph: bool = True, tmp_dir: str = './tmp', is_collapsible: bool = False, num_proc: int = 1) -> pd.io.formats.style.Styler:
+def dfSummary(data: pd.DataFrame, max_level: int = 10, show_graph: bool = True, tmp_dir: str = './tmp', is_collapsible: bool = False, num_proc: int = 1):
     """
     Generate HTML data summary.
 
@@ -30,7 +30,7 @@ def dfSummary(data: pd.DataFrame, max_level: int = 10, show_graph: bool = True, 
         num_proc (int, optional): Number of processes to use for parallel computation. Defaults to 1.
 
     Returns:
-        pd.io.formats.style.Styler: Styled DataFrame if is_collapsible = False
+        pd.DataFrame: Styled DataFrame if is_collapsible = False
         HTML: HTML object if is_collapsible = True
 
     Examples:
@@ -67,20 +67,19 @@ def dfSummary(data: pd.DataFrame, max_level: int = 10, show_graph: bool = True, 
     missing_pct = data.isna().mean()
     out['Missing'] = [f'{m:,}<br>({p:.1%})' for m, p in zip(missing, missing_pct)]
 
-    styled_out = (out.style
-        .set_properties(**{
-            'text-align': 'left',
-            'font-size': '12px',
-            'vertical-align': 'middle'
-        })
-        .set_table_styles([{'selector': 'thead>tr>th', 'props': 'text-align: left'}])
-        .set_properties(subset=['No'], **{'width': '5%', 'max-width': '50px', 'min-width': '20px'})
-        .set_properties(subset=['Variable'], **{'width': '15%', 'max-width': '200px', 'min-width': '100px', 'word-break': 'break-word'})
-        .set_properties(subset=['Stats / Values'], **{'width': '30%', 'min-width': '100px'})
-        .set_properties(subset=['Freqs / (% of Valid)'], **{'width': '25%', 'min-width': '100px'})
-        .set_properties(subset=['Missing'], width='10%')
-        .hide(axis='index')
-        .set_caption(tbl_caption))
+    styled_out = out.style.set_properties(**{
+        'text-align': 'left',
+        'font-size': '12px',
+        'vertical-align': 'middle'
+    })
+    styled_out = styled_out.set_table_styles([{'selector': 'thead>tr>th', 'props': 'text-align: left'}])
+    styled_out = styled_out.set_properties(subset=['No'], **{'width': '5%', 'max-width': '50px', 'min-width': '20px'})
+    styled_out = styled_out.set_properties(subset=['Variable'], **{'width': '15%', 'max-width': '200px', 'min-width': '100px', 'word-break': 'break-word'})
+    styled_out = styled_out.set_properties(subset=['Stats / Values'], **{'width': '30%', 'min-width': '100px'})
+    styled_out = styled_out.set_properties(subset=['Freqs / (% of Valid)'], **{'width': '25%', 'min-width': '100px'})
+    styled_out = styled_out.set_properties(subset=['Missing'], width='10%')
+    styled_out = styled_out.hide(axis='index')
+    styled_out = styled_out.set_caption(tbl_caption)
 
     if show_graph:
         styled_out = styled_out.set_properties(subset=['Graph'], **{'width': '20%', 'min-width': '150px'})
