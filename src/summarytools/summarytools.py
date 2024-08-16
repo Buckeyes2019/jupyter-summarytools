@@ -96,5 +96,12 @@ def _summarize_col(series: pd.Series, max_level: int = 10, tbl_name: str = 'df',
     elif is_datetime64_any_dtype(series):
         return _stats_date_col(series, show_graph, filename)
     elif series.dtype == bool:
-        return _stats_cat_col(series, max_level, show_graph
+        return _stats_cat_col(series, max_level, show_graph, filename)
+    elif is_numeric_dtype(series):
+        return _stats_num_col(series, show_graph, filename)
+    else:
+        return {'Stats / Values': f'Unsupported dtype {series.dtype}'}
 
+def _get_stats(data: pd.DataFrame, max_level: int, tbl_name: str, show_graph: bool, tmp_dir: Path) -> list:
+    return [_summarize_col(data[v], max_level, tbl_name, i, show_graph, tmp_dir) 
+            for i, v in enumerate(data.columns)]
